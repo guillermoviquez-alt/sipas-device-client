@@ -4,6 +4,7 @@ import config
 import functions
 import socket
 import logging
+import time
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
@@ -49,7 +50,12 @@ class WebServer(BaseHTTPRequestHandler):
             print("Server asking for a ping")
             result = {"response": "pong"}
         if parameters["action"] == "activate_relay":
+            functions.setupGPIO(int(parameters["gpio"]))
+            GPIO.output(int(parameters["gpio"]), GPIO.HIGH)
+            time.sleep(int(parameters["time"]))
+            GPIO.output(int(parameters["gpio"]), GPIO.LOW)
             result = {"response": "activated"}
+            print("" + parameters["gpio"] + " Activated")
         self.send_response(200)
         self.send_header('Content-type', 'text/json')
         self.send_header('Access-Control-Allow-Origin', '*')
