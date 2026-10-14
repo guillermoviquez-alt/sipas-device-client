@@ -1,0 +1,191 @@
+function update_clock(){
+    $("#current_time").html(moment().format("HH:mm"));
+    $("#current_date").html(moment().format("dddd[\n]Do MMM YYYY "));
+}
+
+function scanner_check(){
+    const valor=$("#codigo_escaner").val();
+    $("#codigo_escaner").val("");
+    $("#codigo_escaner").attr("disabled","");
+    $.when(privatev4APICall({module:"peop",action:"find_people_by_badge_id",parameters:{id_biblioteca:valor}})).done(function(person){
+        if(typeof person["data"]["no_persona"] !== "undefined"){
+            persona=person["data"];
+            no_persona=persona["no_persona"];
+            if(persona["foto"]!==null){
+                $("#foto_ingreso").css("display","");
+                if( persona["foto"].startsWith("https://sipas-backend.panam.ed.cr")){
+                    $("#foto_ingreso").attr("src",persona["foto"]);
+                }else{
+                    $("#foto_ingreso").attr("src",backend_url+"/v4/file/view/"+session_uid+"/"+((persona["foto"]).replaceAll('https://sipasv3.panam.ed.cr/fileView/','').replaceAll('https://sipas.panam.ed.cr/v4/file/view/','')));
+                }
+            }
+
+            $("#nombre_ingreso").html(persona["nombre"]+" "+persona["apellido1"]);
+            $("#titulo_registro_ingreso").css("display","");
+            if((persona["es_administrativo"] || persona["es_profesor"]) ){
+                /*if(no_dispositivo==="179" || no_dispositivo==="157"){
+                    $("#boton_abrir_puerta").css("display","");
+                    $("#boton_abrir_puerta").removeAttr("disabled");
+                }
+                if(no_dispositivo==="156"){
+                    $("#boton_abrir_puerta2").css("display","");
+                    $("#boton_abrir_puerta2").removeAttr("disabled");
+                }*/
+            }
+            enter_registry();
+
+            mostrando_persona=true;
+            if(!persona["es_relativo"]){
+                timer=5;
+            }
+        }else{
+            showNotification("Wrong input data","error");
+            hideLoader();
+            search_clean();
+        }
+    }).fail(search_clean);
+}
+
+function search_clean(){
+    $("#codigo_escaner").removeAttr("disabled");
+    $("#boton_abrir_puerta").css("display","none");
+    $("#boton_abrir_puerta2").css("display","none");
+    $("#boton_marcar_salida_bloque").css("display","none");
+    $("#boton_marcar_reingreso_bloque").css("display","none");
+    $("#titulo_registro_ingreso").css("display","none");
+    $("#registro_ingreso").html("");
+    $("#foto_ingreso").attr("src","");
+    $("#foto_ingreso").css("display","none");
+    $("#nombre_ingreso").html("");
+    $("#detalle_asistencia").html("");
+    $("#hijos").html("");
+    mostrando_persona=false;
+    no_persona=null;
+    timer=10;
+    cantidad_hijos=0;
+    cantidad_hijos_presionados=0;
+    $("#timeout").html("10");
+    document.getElementById("codigo_escaner").focus();
+}
+
+function fail_report(){
+    console.log("Error");
+    hideLoader();
+}
+
+function link_device(){
+    setLocalVariable("device_uid",$("#codigo_link").val());
+    window.location.reload();
+}
+
+function cambioIdioma(idioma){
+    $(".lang_ES").css("display","none");
+    $(".lang_EN").css("display","none");
+    $(".lang_"+idioma).css("display","");
+}
+
+function enter_registry(){
+    $.when(privatev4APICall({module:"secu",action:"save_enter_registry",parameters:{no_persona:no_persona,sub_tipo:3}})).done(function(registros){
+        var fecha_hoy=moment().format("YYYY-MM-DD");
+        persona["registro"] = registros["data"]["resultado"];
+        persona["registro_previo"] = registros["data"]["registro"];
+        if(persona["registro"]==="registro_previo"){
+            can_leave=false;
+            if(!persona["es_estudiante"]){
+                $("#boton_marcar_salida_bloque").css("display","");
+
+            }else{
+                $(persona["registro_previo"]).each(function(i,e){
+                    if((e["sub_tipo_registro"]==="2" && moment(e["fecha"]).diff(moment())<=0) || e["sub_tipo_registro"]==="1"){
+                        can_leave=true;
+                        console.log("Puede Salir");
+                        $.when(privatev4APICall({module:"secu",action:"save_exit_registry",parameters:{no_persona:no_persona,sub_tipo:3,detalle:"ID Scan Exit",puerta:0,no_usuario:no_persona}})).done(function(registros){
+                            $("#registro_ingreso").append("<p><i class='fas fa-walking fa-flip-horizontal' style='color: var(--PAS-orange);'></i>&nbsp;ID Scan Exit&nbsp;-&nbsp;"+moment(e["fecha"]).format("HH:mm:ss")+"</p>");
+                            timer=5;
+                        }).fail(function(error){
+                            console.log(error);
+                            hideLoader();
+                            search_clean();
+                        });
+                    }else{
+                        console.log("NO Puede Salir");
+                    }
+                });
+                $.when(privatev4APICall({module:"sche",action:"person_schedule_by_date",parameters:{no_persona:persona["no_persona"],fecha:fecha_hoy}})).done(function(cursos){
+                    $(cursos["data"]).each(function(i,curso){
+                        $("#detalle_asistencia").append("<div style='font-size:11px;'><b>"+curso["seccion_nombre"]+"</b> -> "+curso["attendance_status"]+"</div>");
+                        //console.log(curso);
+                    });
+                });
+            }
+            if(persona["es_relativo"]){
+                $(persona["hijos_lista"]).each(function(i,e){
+                    $("#hijos").append("<p><b class='lang_ES'>¿"+e["nombre"]+"&nbsp;sale tambien?</b><b class='lang_EN'>"+e["nombre"]+"&nbsp;exits too?</b>&nbsp;<input type='checkbox' checked class='sale_hijo' value='"+e["no_persona"]+"'></p>");
+                });
+            }
+        }else{
+            if(persona["es_relativo"]){
+                cantidad_hijos=persona["hijos_lista"].length;
+                $(persona["hijos_lista"]).each(function(i,e){
+                    $("#hijos").append("<p><b class='lang_ES'>¿"+e["nombre"]+"&nbsp;ingresa tambien?</b><b class='lang_EN'>"+e["nombre"]+"&nbsp;enters too?</b><br><button class='btn btn-primary btn-sm' id='btn_ingreso_"+e["no_persona"]+"' onclick='guardarReingresoAux("+e["no_persona"]+");'><b class='lang_EN'>Yes</b><b class='lang_ES'>Si</b></button></p>");
+                });
+            }
+            if(persona["es_estudiante"]){
+                //Marcar asistencia a presente
+
+                $.when(privatev4APICall({module:"sche",action:"person_schedule_by_date",parameters:{no_persona:persona["no_persona"],fecha:fecha_hoy}})).done(function(cursos){
+                    $(cursos["data"]).each(function(i,curso){
+                        if(curso["attendance_status"]==='No attendance taken'){
+                            var parameters={
+                                no_ciclo:curso["no_ciclo"],
+                                no_nivel:curso["no_nivel"],
+                                no_seccion:curso["no_seccion"],
+                                no_persona:persona["no_persona"],
+                                estado:0,
+                                fecha:fecha_hoy,
+                                no_dia:curso["no_dia"],
+                                no_periodo:curso["no_periodo"],
+                                parte:curso["parte"],
+                                persona_registra:persona["no_persona"],
+                                detalle:"Agregado por ID Scan",
+                                registro_ligado:null
+                            };
+                            privatev4APICall({module:"sche",action:"person_insert_attendance_by_course",parameters:parameters});
+                        }
+                    });
+                });
+            }
+        }
+        $(persona["registro_previo"]).each(function(i,e){
+            switch(e["sub_tipo_registro"]){
+                case '0':
+                    $("#registro_ingreso").append("<p><i class='fas fa-bus'></i>&nbsp;Bus arrival&nbsp;-&nbsp;"+moment(e["fecha"]).format("HH:mm:ss")+"</p>");
+                    break;
+                case '1':
+                    $("#registro_ingreso").append("<p><i class='fas fa-car "+((e["tipo_registro"]==="1")?"fa-flip-horizontal":"")+" ' style='"+((e["tipo_registro"]==="1")?"color: var(--PAS-orange);":"color: var(--PAS-green);")+"'></i>&nbsp;Car Queue&nbsp;-&nbsp;"+moment(e["fecha"]).format("HH:mm:ss")+"</p>");
+                    break;
+                case '2':
+                    $("#registro_ingreso").append("<p><i class='fas fa-walking "+((e["tipo_registro"]==="1")?"fa-flip-horizontal":"")+" ' style='"+((e["tipo_registro"]==="1")?"color: var(--PAS-orange);":"color: var(--PAS-green);")+"'></i>&nbsp;Early dismissal&nbsp;-&nbsp;"+moment(e["fecha"]).format("HH:mm:ss")+"</p>");
+                    break;
+                case '3':
+                    $("#registro_ingreso").append("<p><i class='fas fa-walking "+((e["tipo_registro"]==="1")?"fa-flip-horizontal":"")+" ' style='"+((e["tipo_registro"]==="1")?"color: var(--PAS-orange);":"color: var(--PAS-green);")+"'></i>&nbsp;ID scan&nbsp;-&nbsp;"+moment(e["fecha"]).format("HH:mm:ss")+"</p>");
+                    break;
+                case '8':
+                    $("#registro_ingreso").append("<p><i class='fas fa-walking "+((e["tipo_registro"]==="1")?"fa-flip-horizontal":"")+" ' style='"+((e["tipo_registro"]==="1")?"color: var(--PAS-orange);":"color: var(--PAS-green);")+"'></i>&nbsp;Security scan&nbsp;-&nbsp;"+moment(e["fecha"]).format("HH:mm:ss")+"</p>");
+                    break;
+                case '9':
+                    $("#registro_ingreso").append("<p><i class='fas fa-car "+((e["tipo_registro"]==="1")?"fa-flip-horizontal":"")+" ' style='"+((e["tipo_registro"]==="1")?"color: var(--PAS-orange);":"color: var(--PAS-green);")+"'></i>&nbsp;Car Leave&nbsp;-&nbsp;"+moment(e["fecha"]).format("HH:mm:ss")+"</p>");
+                    break;
+                default:
+                    break;
+            }
+        });
+        cambioIdioma(persona["idioma_preferido"]);
+        hideLoader();
+    }).fail(function(error){
+                console.log(error);
+                showNotification("Error, try again","error");
+                hideLoader();
+                search_clean()
+            });
+}

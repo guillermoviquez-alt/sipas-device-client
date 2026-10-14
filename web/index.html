@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta content='width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=1, shrink-to-fit=no' name='viewport' />
+        <title id="client_title">SIPAS v4</title>
+        <link rel="icon" type="image/png" href="img/favicon.png">
+        <link rel="apple-touch-icon" sizes="192x192" href="img/favicon.png">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link href="css/main.css" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" async>
+        <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet" async>
+        <link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-table@latest/dist/bootstrap-table.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@latest/dist/bootstrap-table.min.js"></script>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="row body-device" id="device_body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="date">
+                                <div class="card" id="seccion_hora" style=" background-color: transparent; margin-top: 10px; box-shadow: 0 0 5px 0 rgba(0, 0, 0, 1); border: none;">
+                                    <div class="card-body" style="background-color: rgba(0,0,0,0.85); color: white;">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <p id="current_time" style="font-size: 44px; font-weight: bold; text-align: center;"></p>
+                                                <p id="current_date" style="text-align: center;font-size: 24px; "></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="device_link">
+                                <div class="col-12">
+                                    <label for="codigo_link">Type link code</label>
+                                    <input type="text" class="form-control" id="codigo_link" placeholder="Code / Código">
+                                    <button class="btn btn-primary" id="link_btn">Link</button>
+                                </div>
+                            </div>
+                            <div  id="id_scan" style="margin-top: 20px;">
+                                <div class="row">
+                                    <div class="col-12" style="margin-bottom:20px;">
+                                        <input type="text" class="form-control" id="codigo_escaner" placeholder="Code / Código">
+                                    </div>
+                                    <div class="col-12" id="detalle_ingreso">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <img src="" id="foto_ingreso" style="width:80%; border-radius: 5px; box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);">
+                                                <p id="nombre_ingreso" style="font-size: 20px;"></p>
+                                                <div id="hijos">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-7">
+                                                <div id="boton_marcar_salida_bloque" style="display:none;">
+                                                    <div><b class="lang_EN">Are you leaving?</b><b class="lang_ES">¿Esta usted saliendo?</b></div>
+                                                    <button class='btn btn-primary' id='boton_marcar_salida'><i class='fas fa-exit'></i>&nbsp; <b class='lang_EN'>Yes</b><b class="lang_ES">Si</b></button><br><br>
+                                                </div>
+                                                <div id="boton_marcar_reingreso_bloque" style="display:none;">
+                                                    <div><b class="lang_EN">Are you re-entering?</b><b class="lang_ES">¿Esta usted ingresando nuevamente?</b></div>
+                                                    <button class='btn btn-primary' id='boton_marcar_reingreso'><i class='fas fa-walking'></i>&nbsp; <b class='lang_EN'>Yes</b><b class="lang_ES">Si</b></button><br><br>
+                                                </div>
+                                                <div><button class='btn btn-primary' id='boton_abrir_puerta' style="display:none;" onclick="abrirPuerta()"><i class='fas fa-door-open'></i>&nbsp; <b class='lang_EN'>Open Door</b><b class="lang_ES">Abrir puerta</b></button><br><br></div>
+                                                <div><button class='btn btn-primary' id='boton_abrir_puerta2' style="display:none;" onclick="abrirPuerta2()"><i class='fas fa-door-open'></i>&nbsp; <b class='lang_EN'>Open Door</b><b class="lang_ES">Abrir puerta</b></button><br><br></div>
+                                                <p id="titulo_registro_ingreso" style="display:none;"><b class='lang_EN'>Entrance and exit log</b><b class="lang_ES">Registro de ingreso y salida</b></p>
+                                                <p id="registro_ingreso"></p>
+                                                <p id="titulo_detalle_asistencia" style="display:none;"><b class='lang_EN'>Current Class</b><b class="lang_ES">Clase Actual</b></p>
+                                                <p id="detalle_asistencia"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row footer-device" id="device_footer">
+                
+            </div>
+        </div>
+    </body>
+    <script src="js/global.js?v=4.1.0"></script>
+    <script src="js/configuration.js?v=4.1.0"></script>
+    <script src="js/device.js?v=4.1.0"></script>
+    <script src="js/boot.js?v=4.1.0"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="js/moment.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/1.3.0/moment-duration-format.min.js"></script>
+    <script>
+        update_clock();
+        intervals["date"]=setInterval(update_clock,10000);
+        $.when(privatev4APICall({module:"devi",action:"device_info_by_device_uid",parameters:{"device_uid":device_uid}})).done(function(result){
+            if(result["data"]!==null){
+                device_info=result["data"];
+                $("#device_link").remove();
+                console.log(device_info);
+                categorias=device_info["categoria"].replaceAll("{","").replaceAll("}","").split(",");
+                if (categorias.includes("asistencia")){
+                    $("#codigo_escaner").change(scanner_check);
+                    //document.getElementById("codigo_escaner").focus();
+                    intervals["scan_timer"]=setInterval(function(){
+                        if(mostrando_persona){
+                            timer--;
+                            if(timer===0){
+                                search_clean();
+                            }
+                            $("#timeout").html(timer);
+                        }
+                    },1000);
+                    $("#device_footer").append("<div style='padding-left:20px;'>Timeout: <span id='timeout'>5</span></div>");
+                    $("#codigo_escaner").on( "focusout", function() {
+                        $("#codigo_escaner").focus();
+                    });
+                    hideLoader();
+                    $("#codigo_escaner").focus();
+                }else{$("#id_scan").remove();}
+
+
+            }else{
+                $("#id_scan").remove();
+                $("#link_btn").click(link_device);
+                hideLoader();
+            }
+        }).fail(fail_report);
+    </script>
+</html>
+
