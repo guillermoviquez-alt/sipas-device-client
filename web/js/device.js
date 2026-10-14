@@ -23,14 +23,14 @@ function scanner_check(){
             $("#nombre_ingreso").html(persona["nombre"]+" "+persona["apellido1"]);
             $("#titulo_registro_ingreso").css("display","");
             if((persona["es_administrativo"] || persona["es_profesor"]) ){
-                /*if(no_dispositivo==="179" || no_dispositivo==="157"){
+                if(no_dispositivo==="179" || no_dispositivo==="157"){
                     $("#boton_abrir_puerta").css("display","");
                     $("#boton_abrir_puerta").removeAttr("disabled");
                 }
                 if(no_dispositivo==="156"){
                     $("#boton_abrir_puerta2").css("display","");
                     $("#boton_abrir_puerta2").removeAttr("disabled");
-                }*/
+                }
             }
             enter_registry();
 
@@ -240,5 +240,26 @@ function scan_access_device(){
 
 function activate_relay(ip,gpio,time){
 
-    $.ajax({url: "http://"+ip+":8000",type: "post",data: {action:"activate_relay",gpio:gpio,time:time},dataType: "json"});
+    return $.ajax({url: "http://"+ip+":8000",type: "post",data: {action:"activate_relay",gpio:gpio,time:time},dataType: "json"});
+}
+
+function abrirPuerta(){
+    $("#boton_abrir_puerta").attr("disabled","");
+    $.when(activate_relay("10.0.3.2","23",5)).done(function(list){
+        $("#boton_abrir_puerta").removeAttr("disabled");
+        $("#codigo_escaner").removeAttr("disabled");
+    }).fail(function(error){
+        $("#boton_abrir_puerta").removeAttr("disabled");
+        $("#codigo_escaner").removeAttr("disabled");
+    });
+}
+function abrirPuerta2(){
+    $("#boton_abrir_puerta2").attr("disabled","");
+    $.when(activate_relay("10.0.3.119","17",1)).done(function(list){
+        $("#boton_abrir_puerta2").removeAttr("disabled");
+        $("#codigo_escaner").removeAttr("disabled");
+    }).fail(function(error){
+        $("#boton_abrir_puerta2").removeAttr("disabled");
+        $("#codigo_escaner").removeAttr("disabled");
+    });
 }
