@@ -76,6 +76,25 @@
                                     </div>
                                 </div>
                             </div>
+                            <div id="access_control">
+                                <div class="card" style="margin-top:100px;">
+                                    <div class="card-body">
+                                        <div class='row'>
+                                            <div class="col-12">
+                                                <input type="text" class="form-control" id="codigo_escaner2" placeholder="Code / Código">
+                                            </div>
+                                            <div class="col-12">
+                                                <p>&nbsp;</p>
+                                                <h3 style="text-align: center; font-size:30px; font-weight: bold;" id='ubicacion'></h3>
+                                                <p>&nbsp;</p>
+                                            </div>
+                                            <div class="col-12" style="text-align: center">
+                                                <div class="badge bg-danger" style="text-align: center; font-size:28px;" id='estado'>Access not granted <br> Acceso no permitido</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
 
@@ -124,6 +143,65 @@
                     $("#codigo_escaner").focus();
                 }else{$("#id_scan").remove();}
 
+
+
+                if (categorias.includes("access_control")){
+                    $("#codigo_escaner").change(function(){
+                        codigo=$(this).val();
+                        showLoader();
+                        $("#codigo_escaner").val("");
+                        $("#codigo_escaner").attr("disabled","");
+                        $.when(privatev4APICall({module:"peop",action:"find_people_by_badge_id",parameters:{id_biblioteca:codigo}})).done(function(person){
+                            hideLoader();
+                            if(typeof person["data"]["no_persona"] !== "undefined"){
+                                $.when(privatev4APICall({module:"secu",action:"check_access_to_device",parameters:{no_persona:person["data"]["no_persona"],id_device:no_dispositivo}})).done(function(access){
+                                    if(access["data"]["acceso"]==="si"){
+                                        persona=person["data"];
+                                        no_persona=persona["no_persona"];
+                                        $("#estado").removeClass("bg-danger");
+                                        $("#estado").addClass("bg-success");
+                                        $("#estado").html("Access granted<br>Acceso permitido");
+                                        /*$.when(privatev4APICall({module:"devi",action:"activate_relay",parameters:{"gpio":gpio,time:timer,"ip":device_info["ip"],no_persona:no_persona}})).done(function(p){
+
+                                        });*/
+                                        interv=setInterval(function(){
+                                            if(aux_timer===0){
+                                                $("#codigo_escaner").removeAttr("disabled");
+                                                $("#estado").html("Access not granted<br>Acceso no permitido");
+                                                $("#estado").removeClass("bg-success");
+                                                $("#estado").addClass("bg-danger");
+                                                document.getElementById("codigo_escaner").focus();
+                                                open=false;
+                                                aux_timer=timer;
+                                                clearInterval(interv);
+                                            }else{
+                                                aux_timer--;
+                                            }
+                                            $("#timer").html(aux_timer);
+                                        },1000);
+                                    }else{
+                                        $("#codigo_escaner").removeAttr("disabled");
+                                        document.getElementById("codigo_escaner").focus();
+                                    }
+                                });
+
+                            }else{
+                                $("#codigo_escaner").removeAttr("disabled");
+                                document.getElementById("codigo_escaner").focus();
+                            }
+                        });
+                    });
+                    $.when(privatev4APICall({module:"spac",action:"info_space_by_uuid",parameters:{uuid:device_info["espacio"]}})).done(function(space){
+                        space_info=space["data"];
+                        $("#ubicacion").html(space_info["aula"].replace("/","<br>"));
+                    });
+                    $("#device_footer").append("<div style='padding-left:20px;'>Timeout: <span id='timeout'>5</span></div>");
+                    $("#codigo_escaner2").on( "focusout", function() {
+                        $("#codigo_escaner2").focus();
+                    });
+                    hideLoader();
+                    $("#codigo_escaner2").focus();
+                }else{$("#access_control").remove();}
 
             }else{
                 $("#id_scan").remove();

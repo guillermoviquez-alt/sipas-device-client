@@ -28,6 +28,7 @@ let editorFunctionOnClose=null;
 
 let timer=10;
 let device_info=null;
+let space_info=null;
 
 let mostrando_persona=false;
 let no_persona=null;
