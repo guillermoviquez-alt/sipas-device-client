@@ -189,3 +189,56 @@ function enter_registry(){
                 search_clean()
             });
 }
+
+function scan_access_device(){
+    let codigo=$(this).val();
+    showLoader();
+    $("#codigo_escaner2").val("");
+    $("#codigo_escaner2").attr("disabled","");
+    $.when(privatev4APICall({module:"peop",action:"find_people_by_badge_id",parameters:{id_biblioteca:codigo}})).done(function(person){
+
+        if(typeof person["data"]["no_persona"] !== "undefined"){
+            $.when(privatev4APICall({module:"secu",action:"check_access_to_device",parameters:{no_persona:person["data"]["no_persona"],id_device:no_dispositivo}})).done(function(access){
+                if(access["data"]["acceso"]==="si"){
+                    persona=person["data"];
+                    no_persona=persona["no_persona"];
+                    $("#estado").removeClass("bg-danger");
+                    $("#estado").addClass("bg-success");
+                    $("#estado").html("Access granted<br>Acceso permitido");
+                    activate_relay("localhost",23,10);
+                    /*$.when(privatev4APICall({module:"devi",action:"activate_relay",parameters:{"gpio":gpio,time:timer,"ip":device_info["ip"],no_persona:no_persona}})).done(function(p){
+
+                    });*/
+                    intervals["scan_timer"]=setInterval(function(){
+                        if(aux_timer===0){
+                            $("#codigo_escaner2").removeAttr("disabled");
+                            $("#estado").html("Access not granted<br>Acceso no permitido");
+                            $("#estado").removeClass("bg-success");
+                            $("#estado").addClass("bg-danger");
+                            document.getElementById("codigo_escaner").focus();
+                            open=false;
+                            aux_timer=timer;
+                            clearInterval(intervals["scan_timer"]);
+                        }else{
+                            aux_timer--;
+                        }
+                        $("#timer").html(aux_timer);
+                    },1000);
+                }else{
+                    $("#codigo_escaner2").removeAttr("disabled");
+                    document.getElementById("codigo_escaner").focus();
+                }
+            });
+
+        }else{
+            $("#codigo_escaner2").removeAttr("disabled");
+            document.getElementById("codigo_escaner").focus();
+            hideLoader();
+        }
+    });
+}
+
+function activate_relay(ip,gpio,time){
+
+    $.ajax({url: "http://"+ip+":8000",type: "post",data: {action:"activate_relay",gpio:gpio,time:time},dataType: "json"});
+}

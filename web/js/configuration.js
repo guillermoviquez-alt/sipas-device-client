@@ -23,15 +23,19 @@ let intervals={
     date:null,
     scan_timer:null
 };
+
+let relay_devices=[];
+
 let keep_loader=false;
 let editorFunctionOnClose=null;
 
 let timer=10;
+let aux_timer=timer;
 let device_info=null;
 let space_info=null;
-
+let no_dispositivo=null;
 let mostrando_persona=false;
 let no_persona=null;
 let persona=null;
-var cantidad_hijos=0;
-var cantidad_hijos_presionados=0;
+let cantidad_hijos=0;
+let cantidad_hijos_presionados=0;

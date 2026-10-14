@@ -38,6 +38,8 @@ class WebServer(BaseHTTPRequestHandler):
         if parameters["action"] == "ping":
             print("Server asking for a ping")
             result = {"response": "pong"}
+        if parameters["action"] == "activate_relay":
+            result = {"response": "activated"}
         self.send_response(200)
         self.send_header('Content-type', 'text/json')
         self.send_header('Access-Control-Allow-Origin', '*')

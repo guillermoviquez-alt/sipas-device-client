@@ -117,15 +117,14 @@
     <script>
         update_clock();
         intervals["date"]=setInterval(update_clock,10000);
-        $.when(privatev4APICall({module:"devi",action:"device_info_by_device_uid",parameters:{"device_uid":device_uid}})).done(function(result){
-            if(result["data"]!==null){
-                device_info=result["data"];
+        $.when(privatev4APICall({module:"devi",action:"device_info_by_device_uid",parameters:{"device_uid":device_uid}}),privatev4APICall({module:"devi",action:"relay_device_list",parameters:{}})).done(function(result1,result2){
+            if(result1[0]["data"]!==null){
+                device_info=result1[0]["data"];
                 $("#device_link").remove();
-                console.log(device_info);
-                categorias=device_info["categoria"].replaceAll("{","").replaceAll("}","").split(",");
+                no_dispositivo=device_info["no_dispositivo"];
+                let categorias=device_info["categoria"].replaceAll("{","").replaceAll("}","").split(",");
                 if (categorias.includes("asistencia")){
                     $("#codigo_escaner").change(scanner_check);
-                    //document.getElementById("codigo_escaner").focus();
                     intervals["scan_timer"]=setInterval(function(){
                         if(mostrando_persona){
                             timer--;
@@ -145,52 +144,8 @@
 
 
 
-                if (categorias.includes("access_control")){
-                    $("#codigo_escaner").change(function(){
-                        codigo=$(this).val();
-                        showLoader();
-                        $("#codigo_escaner").val("");
-                        $("#codigo_escaner").attr("disabled","");
-                        $.when(privatev4APICall({module:"peop",action:"find_people_by_badge_id",parameters:{id_biblioteca:codigo}})).done(function(person){
-                            hideLoader();
-                            if(typeof person["data"]["no_persona"] !== "undefined"){
-                                $.when(privatev4APICall({module:"secu",action:"check_access_to_device",parameters:{no_persona:person["data"]["no_persona"],id_device:no_dispositivo}})).done(function(access){
-                                    if(access["data"]["acceso"]==="si"){
-                                        persona=person["data"];
-                                        no_persona=persona["no_persona"];
-                                        $("#estado").removeClass("bg-danger");
-                                        $("#estado").addClass("bg-success");
-                                        $("#estado").html("Access granted<br>Acceso permitido");
-                                        /*$.when(privatev4APICall({module:"devi",action:"activate_relay",parameters:{"gpio":gpio,time:timer,"ip":device_info["ip"],no_persona:no_persona}})).done(function(p){
-
-                                        });*/
-                                        interv=setInterval(function(){
-                                            if(aux_timer===0){
-                                                $("#codigo_escaner").removeAttr("disabled");
-                                                $("#estado").html("Access not granted<br>Acceso no permitido");
-                                                $("#estado").removeClass("bg-success");
-                                                $("#estado").addClass("bg-danger");
-                                                document.getElementById("codigo_escaner").focus();
-                                                open=false;
-                                                aux_timer=timer;
-                                                clearInterval(interv);
-                                            }else{
-                                                aux_timer--;
-                                            }
-                                            $("#timer").html(aux_timer);
-                                        },1000);
-                                    }else{
-                                        $("#codigo_escaner").removeAttr("disabled");
-                                        document.getElementById("codigo_escaner").focus();
-                                    }
-                                });
-
-                            }else{
-                                $("#codigo_escaner").removeAttr("disabled");
-                                document.getElementById("codigo_escaner").focus();
-                            }
-                        });
-                    });
+                if (categorias.includes("control_acceso")){
+                    $("#codigo_escaner2").change(scan_access_device);
                     $.when(privatev4APICall({module:"spac",action:"info_space_by_uuid",parameters:{uuid:device_info["espacio"]}})).done(function(space){
                         space_info=space["data"];
                         $("#ubicacion").html(space_info["aula"].replace("/","<br>"));
@@ -205,9 +160,11 @@
 
             }else{
                 $("#id_scan").remove();
+                $("#access_control").remove();
                 $("#link_btn").click(link_device);
                 hideLoader();
             }
+            relay_devices=result2[0];
         }).fail(fail_report);
     </script>
 </html>
