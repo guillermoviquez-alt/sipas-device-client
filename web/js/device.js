@@ -263,3 +263,35 @@ function abrirPuerta2(){
         $("#codigo_escaner").removeAttr("disabled");
     });
 }
+
+function refrescarSalidasTempranas(){
+        texthtml="";
+        $.when(privatev4APICall({module:"secu",action:"early_dismissal_list",parameters:{}})).done(function(list){
+            $(list["data"]).each(function(i,e){
+                texthtml+="<div class='row' style='border-bottom: 1px solid gray;' id='salida_temprana_"+e["no_persona"]+"'>"+
+                            "<div class='col-12' style='font-weight: bold;' id='salida_temprana_"+e["no_persona"]+"'>"+
+                                "<div>"+moment(e["fecha"]).format("HH:mm")+" "+e["nombre_persona"]+" "+e["nombre_seccion"]+"&nbsp;<i class='fas fa-info-circle text-warning' onclick='mostrarInfoSalidaTemprana("+e["no_persona"]+");'></i><br>"+"</div>"+
+                                ((e["encolado"]!==null)?"<p><i style='font-size:12px;'>"+e["encolado"]+"</i></p><button class='btn btn-primary btn-sm' onclick='dispatchbutton("+e["no_persona"]+");'>Dispatch</button><p>&nbsp;</p>":"")+
+                            "</div>"+
+                            "<div class='col-12' id='salida_temprana_"+e["no_persona"]+"_detalle' style='display:none;'>"+e["razon"]+"</div>"+
+                        "</div>";
+
+            });
+            $("#lista_salidas_tempranas").html("");
+            $("#lista_salidas_tempranas").append(texthtml);
+            timer=300;
+        });
+    }
+    function mostrarInfoSalidaTemprana(no_persona){
+        if($("#salida_temprana_"+no_persona+"_detalle").css("display")==="none"){
+            $("#salida_temprana_"+no_persona+"_detalle").css("display","block");
+        }else{
+            $("#salida_temprana_"+no_persona+"_detalle").css("display","none");
+        }
+    }
+
+    function dispatchbutton(no_persona){
+        $.when(privatev4APICall({module:"secu",action:"save_exit_registry",parameters:{no_persona:no_persona,sub_tipo:9,detalle:"Reception dispatch / car exit",puerta:0,no_usuario:no_persona}})).done(function(registros){
+            refrescarSalidasTempranas();
+        });
+    }

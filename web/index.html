@@ -107,6 +107,29 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div id="early_dismissal">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h5 class="card-title">Early Dissmissals</h5>
+                                                <button class='btn btn-primary' lang-replace="titulo_actualizar" onclick='refrescarSalidasTempranas("<?php echo $filtro; ?>")'>Refresh&nbsp;<span id='tiempo_para_actualizar'>0</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body" style=''>
+                                        <div class="row">
+                                            <div class="col-12" >
+                                                <div id="lista_salidas_tempranas" style="max-height:400px; height:400px; overflow-x: hidden; overflow-y: auto;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row footer-device" id="device_footer">
@@ -168,16 +191,23 @@
                 }
 
                 if (categorias.includes("interruptor")){
-                    $(list["data"]).each(function(i,e){
-                        $("#button_list").append(
-                        "<div style='margin-top: 10px; text-align: center;'>"+
-                            "<button class='btn btn-primary boton_switch' style='font-size: 26px; width: 90%;' ip="+e["ip"]+" gpio='"+e["gpio"]+"' time='5'>"+e["interruptor"]+"</button>"+
-                        "</div>");
+                    $.when(privatev4APICall({module:"devi",action:"switch_list",parameters:{}})).done(function(list){
+                        $(list["data"]).each(function(i,e){
+                            $("#button_list").append(
+                            "<div style='margin-top: 10px; text-align: center;'>"+
+                                "<button class='btn btn-primary boton_switch' style='font-size: 26px; width: 90%;' ip="+e["ip"]+" gpio='"+e["gpio"]+"' time='5'>"+e["interruptor"]+"</button>"+
+                            "</div>");
+                        });
                     });
+
                     $(".boton_switch").on("click",function(){
                         activate_relay($(this).attr("ip"),$(this).attr("gpio"),$(this).attr("time"))
                     });
                 }else{$("#switch").remove()}
+
+                if(categorias.includes("salidas_tempranas")){
+                    refrescarSalidasTempranas();
+                }else{$("#early_dismissal").remove()}
 
             }else{
                 $("#id_scan").remove();
