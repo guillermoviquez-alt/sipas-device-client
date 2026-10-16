@@ -107,7 +107,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" style="margin-top:20px;">
                         <div class="col-12">
                             <div id="early_dismissal">
                                 <div class="card">
@@ -115,7 +115,7 @@
                                         <div class="row">
                                             <div class="col-12">
                                                 <h5 class="card-title">Early Dissmissals</h5>
-                                                <button class='btn btn-primary' lang-replace="titulo_actualizar" onclick='refrescarSalidasTempranas("<?php echo $filtro; ?>")'>Refresh&nbsp;<span id='tiempo_para_actualizar'>0</span></button>
+                                                <button class='btn btn-primary' lang-replace="titulo_actualizar" onclick='refrescarSalidasTempranas()'>Refresh</button>
                                             </div>
                                         </div>
                                     </div>
@@ -191,7 +191,7 @@
                 }
 
                 if (categorias.includes("interruptor")){
-                    $.when(privatev4APICall({module:"devi",action:"switch_list",parameters:{}})).done(function(list){
+                    $.when(privatev4APICall({module:"devi",action:"switch_list2",parameters:{no_dispositivo:no_dispositivo}})).done(function(list){
                         $(list["data"]).each(function(i,e){
                             $("#button_list").append(
                             "<div style='margin-top: 10px; text-align: center;'>"+
