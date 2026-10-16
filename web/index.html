@@ -97,7 +97,14 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-
+                            <div id="switch" >
+                                <div class="card" id='device_section_switch' style='background-color: transparent;'>
+                                    <div class="card-body" style='background-color: transparent;'>
+                                        <div class="row" id="button_list">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -156,7 +163,21 @@
                     });
                     hideLoader();
                     $("#codigo_escaner2").focus();
-                }else{$("#access_control").remove();}
+                }else{
+                    $("#access_control").remove();
+                }
+
+                if (categorias.includes("interruptor")){
+                    $(list["data"]).each(function(i,e){
+                        $("#button_list").append(
+                        "<div style='margin-top: 10px; text-align: center;'>"+
+                            "<button class='btn btn-primary boton_switch' style='font-size: 26px; width: 90%;' ip="+e["ip"]+" gpio='"+e["gpio"]+"' time='5'>"+e["interruptor"]+"</button>"+
+                        "</div>");
+                    });
+                    $(".boton_switch").on("click",function(){
+                        activate_relay($(this).attr("ip"),$(this).attr("gpio"),$(this).attr("time"))
+                    });
+                }else{$("#switch").remove()}
 
             }else{
                 $("#id_scan").remove();
