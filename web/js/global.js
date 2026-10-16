@@ -129,8 +129,9 @@ function privatev4APICall(data,timeout=60000){
     return $.ajax({
         url: api_private_v4_url,
         type: "post",
-        data: data,
+        data: JSON.stringify(data),
         dataType: "json",
+        contentType: "application/json",
         //beforeSend:showLoader,
         onError:hideLoader,
         //success:hideLoader,
