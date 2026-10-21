@@ -128,6 +128,13 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div id="slideshow_carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-ride="carousel">
+                                <div class="carousel-inner"  id="slideshow_elements">
+
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -153,6 +160,8 @@
                 $("#device_link").remove();
                 no_dispositivo=device_info["no_dispositivo"];
                 let categorias=device_info["categoria"].replaceAll("{","").replaceAll("}","").split(",");
+
+                /// MARCADOR ENTRADA
                 if (categorias.includes("asistencia")){
                     $("#codigo_escaner").change(scanner_check);
                     intervals["scan_timer"]=setInterval(function(){
@@ -168,12 +177,14 @@
                     $("#codigo_escaner").on( "focusout", function() {
                         $("#codigo_escaner").focus();
                     });
+                    $("#boton_marcar_salida").click(exit_button_clicked);
+
                     hideLoader();
                     $("#codigo_escaner").focus();
                 }else{$("#id_scan").remove();}
 
 
-
+                /// ELEVADOR
                 if (categorias.includes("control_acceso")){
                     $("#codigo_escaner2").change(scan_access_device);
                     $.when(privatev4APICall({module:"spac",action:"info_space_by_uuid",parameters:{uuid:device_info["espacio"]}})).done(function(space){
@@ -190,6 +201,7 @@
                     $("#access_control").remove();
                 }
 
+                ///PANTALLA RECEPCION
                 if (categorias.includes("interruptor")){
                     $.when(privatev4APICall({module:"devi",action:"switch_list2",parameters:{no_dispositivo:no_dispositivo}})).done(function(list){
                         $(list["data"]).each(function(i,e){
@@ -203,19 +215,28 @@
                     $(".boton_switch").on("click",function(){
                         activate_relay($(this).attr("ip"),$(this).attr("gpio"),$(this).attr("time"))
                     });
-                }else{$("#switch").remove()}
+                }else{$("#switch").remove();}
 
+
+                ////LISTA DE SALIDAS TEMPRANAS
                 if(categorias.includes("salidas_tempranas")){
                     refrescarSalidasTempranas();
                     hideLoader();
-                }else{$("#early_dismissal").remove()}
+                }else{$("#early_dismissal").remove();}
+
+                //CARROUSEL DE IMAGENES
+                if(categorias.includes("pantalla")){
+                    startCorousel();
+                    hideLoader();
+                }else{$("#slideshow_carousel").remove();}
 
             }else{
                 $("#id_scan").remove();
                 $("#access_control").remove();
                 $("#link_btn").click(link_device);
-                $("#early_dismissal").remove()
-                $("#switch").remove()
+                $("#early_dismissal").remove();
+                $("#switch").remove();
+                $("#slideshow_carousel").remove();
                 hideLoader();
             }
             relay_devices=result2[0];

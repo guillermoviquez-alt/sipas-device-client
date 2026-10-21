@@ -4,6 +4,7 @@ function update_clock(){
 }
 
 function scanner_check(){
+    showLoader();
     const valor=$("#codigo_escaner").val();
     $("#codigo_escaner").val("");
     $("#codigo_escaner").attr("disabled","");
@@ -38,13 +39,45 @@ function scanner_check(){
             if(!persona["es_relativo"]){
                 timer=5;
             }
+            hideLoader();
         }else{
             showNotification("Wrong input data","error");
             hideLoader();
             search_clean();
         }
-    }).fail(search_clean);
+    }).fail(function(){
+        search_clean();
+        showNotification("Unexpected error occurred","error");
+        hideLoader();
+    });
 }
+
+function exit_button_clicked(){
+    if(no_persona!==null){
+        showLoader();
+        $.when(privatev4APICall({module:"secu",action:"save_exit_registry",parameters:{no_persona:no_persona,sub_tipo:3,detalle:"ID Scan Exit",puerta:0,no_usuario:no_persona}})).done(function(registros){
+            hijos_cant=$(".sale_hijo:checked").length;
+            $(".sale_hijo:checked").each(function(i,e){
+                $.when(privatev4APICall({module:"secu",action:"save_exit_registry",parameters:{no_persona:$(e).val(),sub_tipo:3,detalle:"ID Scan Exit",puerta:0,no_usuario:no_persona}})).done(function(){
+                    if(hijos_cant>=i+1){
+                        search_clean();
+                    }
+                });
+            });
+            if(hijos_cant===0){
+                search_clean();
+            }
+            hideLoader();
+        }).fail(function(error){
+            console.log(error);
+            showNotification("Unexpected error occurred","error");
+            hideLoader();
+            search_clean();
+        });
+    }
+}
+
+
 
 function search_clean(){
     $("#codigo_escaner").removeAttr("disabled");
@@ -265,33 +298,45 @@ function abrirPuerta2(){
 }
 
 function refrescarSalidasTempranas(){
-        texthtml="";
-        $.when(privatev4APICall({module:"secu",action:"early_dismissal_list",parameters:{}})).done(function(list){
-            $(list["data"]).each(function(i,e){
-                texthtml+="<div class='row' style='border-bottom: 1px solid gray;' id='salida_temprana_"+e["no_persona"]+"'>"+
-                            "<div class='col-12' style='font-weight: bold;' id='salida_temprana_"+e["no_persona"]+"'>"+
-                                "<div>"+moment(e["fecha"]).format("HH:mm")+" "+e["nombre_persona"]+" "+e["nombre_seccion"]+"&nbsp;<i class='fas fa-info-circle text-warning' onclick='mostrarInfoSalidaTemprana("+e["no_persona"]+");'></i><br>"+"</div>"+
-                                ((e["encolado"]!==null)?"<p><i style='font-size:12px;'>"+e["encolado"]+"</i></p><button class='btn btn-primary btn-sm' onclick='dispatchbutton("+e["no_persona"]+");'>Dispatch</button><p>&nbsp;</p>":"")+
-                            "</div>"+
-                            "<div class='col-12' id='salida_temprana_"+e["no_persona"]+"_detalle' style='display:none;'>"+e["razon"]+"</div>"+
-                        "</div>";
+    texthtml="";
+    $.when(privatev4APICall({module:"secu",action:"early_dismissal_list",parameters:{}})).done(function(list){
+        $(list["data"]).each(function(i,e){
+            texthtml+="<div class='row' style='border-bottom: 1px solid gray;' id='salida_temprana_"+e["no_persona"]+"'>"+
+                        "<div class='col-12' style='font-weight: bold;' id='salida_temprana_"+e["no_persona"]+"'>"+
+                            "<div>"+moment(e["fecha"]).format("HH:mm")+" "+e["nombre_persona"]+" "+e["nombre_seccion"]+"&nbsp;<i class='fas fa-info-circle text-warning' onclick='mostrarInfoSalidaTemprana("+e["no_persona"]+");'></i><br>"+"</div>"+
+                            ((e["encolado"]!==null)?"<p><i style='font-size:12px;'>"+e["encolado"]+"</i></p><button class='btn btn-primary btn-sm' onclick='dispatchbutton("+e["no_persona"]+");'>Dispatch</button><p>&nbsp;</p>":"")+
+                        "</div>"+
+                        "<div class='col-12' id='salida_temprana_"+e["no_persona"]+"_detalle' style='display:none;'>"+e["razon"]+"</div>"+
+                    "</div>";
 
-            });
-            $("#lista_salidas_tempranas").html("");
-            $("#lista_salidas_tempranas").append(texthtml);
-            timer=300;
         });
+        $("#lista_salidas_tempranas").html("");
+        $("#lista_salidas_tempranas").append(texthtml);
+        timer=300;
+    });
+}
+function mostrarInfoSalidaTemprana(no_persona){
+    if($("#salida_temprana_"+no_persona+"_detalle").css("display")==="none"){
+        $("#salida_temprana_"+no_persona+"_detalle").css("display","block");
+    }else{
+        $("#salida_temprana_"+no_persona+"_detalle").css("display","none");
     }
-    function mostrarInfoSalidaTemprana(no_persona){
-        if($("#salida_temprana_"+no_persona+"_detalle").css("display")==="none"){
-            $("#salida_temprana_"+no_persona+"_detalle").css("display","block");
-        }else{
-            $("#salida_temprana_"+no_persona+"_detalle").css("display","none");
-        }
-    }
+}
 
-    function dispatchbutton(no_persona){
-        $.when(privatev4APICall({module:"secu",action:"save_exit_registry",parameters:{no_persona:no_persona,sub_tipo:9,detalle:"Reception dispatch / car exit",puerta:0,no_usuario:no_persona}})).done(function(registros){
-            refrescarSalidasTempranas();
+function dispatchbutton(no_persona){
+    $.when(privatev4APICall({module:"secu",action:"save_exit_registry",parameters:{no_persona:no_persona,sub_tipo:9,detalle:"Reception dispatch / car exit",puerta:0,no_usuario:no_persona}})).done(function(registros){
+        refrescarSalidasTempranas();
+    });
+}
+
+function startCorousel(){
+    $("#slideshow_elements").html("");
+    $.when(privatev4APICall({module:"devi",action:"slideshow_image_list",parameters:{no_dispositivo:no_dispositivo}})).done(function(result){
+        $(result["data"]).each(function(i,e){
+            $("#slideshow_elements").append("<div class='carousel-item "+((i===0)?"active":"")+"'><img src='"+backend_url+"/v4/file/view/"+session_info["data"]["uid"]+"/"+e["no_archivo"]+"' class='d-block' style='/*height: calc( 100vh - 70px );*/ width:100%; margin-left: auto; margin-right: auto;'></div>");
         });
-    }
+    });
+
+    $('#slideshow_carousel').carousel("cycle");
+    hideLoader();
+}

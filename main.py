@@ -5,7 +5,16 @@ import functions
 import socket
 import logging
 import time
-import RPi.GPIO as GPIO
+import vlc
+try:
+    import RPi.GPIO as GPIO
+    ES_RASPBERRY = True
+except ImportError:
+    ES_RASPBERRY = False
+
+if ES_RASPBERRY:
+    # Aquí haces el import específico o usas código de la Raspberry
+    import picamera
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
@@ -57,6 +66,11 @@ class WebServer(BaseHTTPRequestHandler):
             GPIO.output(int(parameters["gpio"]), GPIO.LOW)
             result = {"response": "activated"}
             print("" + parameters["gpio"] + " Activated")
+        if parameters["action"] == "play_audio":
+            logger.warning("Playing audio")
+            logger.warning(config.SIPAS_BACKEND_URL+"/v4/file/view/"+config.SIPAS_SESSION+"/"+ parameters["no_archivo"])
+            vlc.MediaPlayer(config.SIPAS_BACKEND_URL+"/v4/file/view/"+config.SIPAS_SESSION+"/"+ parameters["no_archivo"]).play()
+            result = {"response": "played"}
         self.send_response(200)
         self.send_header('Content-type', 'text/json')
         self.send_header('Access-Control-Allow-Origin', '*')
