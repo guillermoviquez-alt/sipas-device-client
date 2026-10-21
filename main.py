@@ -14,7 +14,7 @@ except ImportError:
 
 if ES_RASPBERRY:
     # Aquí haces el import específico o usas código de la Raspberry
-    import picamera
+    import os
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
