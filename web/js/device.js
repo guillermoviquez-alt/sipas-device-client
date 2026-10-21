@@ -340,3 +340,37 @@ function startCorousel(){
     $('#slideshow_carousel').carousel("cycle");
     hideLoader();
 }
+
+function startCarQueue(){
+    // 1. Crear la conexión y el canal en el par local (Offerer)
+    const peerConnection = new RTCPeerConnection();
+    const dataChannel = peerConnection.createDataChannel("car_queue_channel");
+
+    // Evento cuando el canal se abre
+    dataChannel.onopen = (event) => {
+      console.log("Canal de datos abierto");
+      dataChannel.send("¡Hola desde el par local!");
+    };
+
+    // Evento cuando se recibe un mensaje
+    dataChannel.onmessage = (event) => {
+      console.log("Mensaje recibido:", event.data);
+    };
+    $.when(privatev4APICall({module:"devi",action: "car_queue_list",parameters:{no_dispositivo:no_dispositivo}})).done(function (result) {
+        contenido="";
+        $(result["data"]).each(function(i,person){
+            contenido+="<div class='row' style='margin-bottom: 10px; border-bottom: 1px solid var(--PAS-yellow); padding-bottom: 10px;' id='salida_pendiente_"+person["no_persona"]+"'>"+
+                /*"<div class='col-2'>"+
+                    "<img style='width:80px; border-radius: 5px; box-shadow: 0 0 5px 0 rgba(0, 0, 0, 1);' src='/v4/file/view/"+session_info["data"]["uid"]+"/"+person["foto"]+"'>"+
+                "</div>"+*/
+                "<div class='col-10'>"+
+                    "<p style='font-size: 28px; font-weight: bold; text-align: left;'>"+person["nombre"]+" "+person["apellido1"]+" "+person["apellido2"]+"</p>"+
+                "</div>"+
+                "<div class='col-2'>"+
+                    "<p style='font-size: 28px; font-weight: bold; text-align: center;'>"+person["nivel_seccion"]+"</p>"+
+                "</div>"+
+            "</div>";
+        });
+        $("#listaSalidasCarroPendientes").html(contenido);
+    });
+}

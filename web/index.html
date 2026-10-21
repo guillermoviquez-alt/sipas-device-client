@@ -105,6 +105,12 @@
                                     </div>
                                 </div>
                             </div>
+                            <div id="car_queue">
+                                <div class="card" id="exit_card2" style="margin-top: 10px;">
+                                    <div class="card-body" id="listaSalidasCarroPendientes">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row" style="margin-top:20px;">
@@ -239,6 +245,14 @@
                     hideLoader();
                 }else{$("#imagenes_pantalla").remove();}
 
+                //COLA DE CARROS
+                if(categorias.includes("salidas")){
+                    startCarQueue();
+                    $("#date").css("position","absolute");
+                    $("#date").css("z-index","2");
+                    hideLoader();
+                }else{$("#imagenes_pantalla").remove();}
+
             }else{
                 $("#id_scan").remove();
                 $("#access_control").remove();
@@ -246,6 +260,7 @@
                 $("#early_dismissal").remove();
                 $("#switch").remove();
                 $("#imagenes_pantalla").remove();
+                $("#car_queue").remove();
                 hideLoader();
             }
             relay_devices=result2[0];
