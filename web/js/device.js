@@ -333,7 +333,7 @@ function startCorousel(){
     $("#slideshow_elements").html("");
     $.when(privatev4APICall({module:"devi",action:"slideshow_image_list",parameters:{no_dispositivo:no_dispositivo}})).done(function(result){
         $(result["data"]).each(function(i,e){
-            $("#slideshow_elements").append("<div class='carousel-item "+((i===0)?"active":"")+"'><img src='"+backend_url+"/v4/file/view/"+session_info["data"]["uid"]+"/"+e["no_archivo"]+"' class='d-block' style='/*height: calc( 100vh - 70px );*/ width:100%; margin-left: auto; margin-right: auto;'></div>");
+            $("#slideshow_elements").append("<div class='carousel-item "+((i===0)?"active":"")+"'><img src='"+backend_url+"/v4/file/view/"+session_info["data"]["uid"]+"/"+e["no_archivo"]+"' class='d-block' style='width:100%; max-height: calc( 100% - 100px ); border-radius: 15px; margin-left: auto; margin-right: auto;'></div>");
         });
     });
 

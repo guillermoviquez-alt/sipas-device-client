@@ -129,9 +129,9 @@
                                 </div>
                             </div>
 
-                            <div id="imagenes_pantalla">
+                            <div id="imagenes_pantalla" style=' padding: 75px;'>
                                 <div class="card">
-                                    <div class="card-body" style=' padding: 50px;'>
+                                    <div class="card-body" style='padding: 20px 60px;'>
                                         <div id="slideshow_carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-ride="carousel">
                                             <div class="carousel-inner"  id="slideshow_elements">
 
@@ -234,8 +234,10 @@
                 //CARROUSEL DE IMAGENES
                 if(categorias.includes("pantalla")){
                     startCorousel();
+                    $("#date").css("position","absolute");
+                    $("#date").css("z-index","2");
                     hideLoader();
-                }else{$("#slideshow_carousel").remove();}
+                }else{$("#imagenes_pantalla").remove();}
 
             }else{
                 $("#id_scan").remove();
@@ -243,7 +245,7 @@
                 $("#link_btn").click(link_device);
                 $("#early_dismissal").remove();
                 $("#switch").remove();
-                $("#slideshow_carousel").remove();
+                $("#imagenes_pantalla").remove();
                 hideLoader();
             }
             relay_devices=result2[0];
