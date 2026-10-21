@@ -83,7 +83,7 @@ if __name__ == '__main__':
     logger.warning("Client version : %s" % config.CLIENT_VERSION)
     logger.warning("Server Starts - %s:%s" % (config.HOSTNAME, config.HOST_PORT))
     logger.warning(functions.send_api_message({"module":"devi","action":"device_conection_notify","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME}))
-    #functions.open_page()
+    functions.open_page()
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:
