@@ -220,14 +220,15 @@
                         $(list["data"]).each(function(i,e){
                             $("#button_list").append(
                             "<div style='margin-top: 10px; text-align: center;'>"+
-                                "<button class='btn btn-primary boton_switch' style='font-size: 26px; width: 90%;' ip='"+e["ip"]+"' gpio='"+e["gpio"]+"' time='5'>"+e["interruptor"]+"</button>"+
+                                "<button class='btn btn-primary boton_switch' id='btn_switch_"+i+"' style='font-size: 26px; width: 90%;' ip='"+e["ip"]+"' gpio='"+e["gpio"]+"' time='5'>"+e["interruptor"]+"</button>"+
                             "</div>");
+                            $("#btn_switch_"+i).on("click",function(){
+                                activate_relay($(this).attr("ip"),$(this).attr("gpio"),$(this).attr("time"));
+                            });
                         });
                     });
 
-                    $(".boton_switch").on("click",function(){
-                        activate_relay($(this).attr("ip"),$(this).attr("gpio"),$(this).attr("time"))
-                    });
+
                 }else{$("#switch").remove();}
 
 
