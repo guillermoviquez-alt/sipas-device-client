@@ -266,7 +266,7 @@ function scan_access_device(){
 
         }else{
             $("#codigo_escaner2").removeAttr("disabled");
-            document.getElementById("codigo_escaner").focus();
+            document.getElementById("codigo_escaner2").focus();
             hideLoader();
         }
     });
