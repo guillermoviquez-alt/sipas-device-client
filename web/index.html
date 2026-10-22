@@ -197,22 +197,7 @@
                 }else{$("#id_scan").remove();}
 
 
-                /// ELEVADOR
-                if (categorias.includes("control_acceso")){
-                    $("#codigo_escaner2").change(scan_access_device);
-                    $.when(privatev4APICall({module:"spac",action:"info_space_by_uuid",parameters:{uuid:device_info["espacio"]}})).done(function(space){
-                        space_info=space["data"];
-                        $("#ubicacion").html(space_info["aula"].replace("/","<br>"));
-                    });
-                    $("#device_footer").append("<div style='padding-left:20px;'>Timeout: <span id='timeout'>5</span></div>");
-                    $("#codigo_escaner2").on( "focusout", function() {
-                        $("#codigo_escaner2").focus();
-                    });
-                    hideLoader();
-                    $("#codigo_escaner2").focus();
-                }else{
-                    $("#access_control").remove();
-                }
+
 
                 ///PANTALLA RECEPCION
                 if (categorias.includes("interruptor")){
@@ -230,6 +215,25 @@
 
 
                 }else{$("#switch").remove();}
+
+                /// ELEVADOR
+                if (categorias.includes("control_acceso")){
+
+                    $("#codigo_escaner2").change(scan_access_device);
+                    $.when(privatev4APICall({module:"spac",action:"info_space_by_uuid",parameters:{uuid:device_info["espacio"]}})).done(function(space){
+                        space_info=space["data"];
+                        $("#ubicacion").html(space_info["aula"].replace("/","<br>"));
+                    });
+                    $("#device_footer").append("<div style='padding-left:20px;'>Timeout: <span id='timeout'>5</span></div>");
+                    $("#codigo_escaner2").on( "focusout", function() {
+                        $("#codigo_escaner2").focus();
+                    });
+                    hideLoader();
+                    $("#codigo_escaner2").focus();
+                    $("#switch").remove();
+                }else{
+                    $("#access_control").remove();
+                }
 
 
                 ////LISTA DE SALIDAS TEMPRANAS

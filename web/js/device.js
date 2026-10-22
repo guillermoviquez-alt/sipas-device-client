@@ -238,7 +238,7 @@ function scan_access_device(){
                     $("#estado").removeClass("bg-danger");
                     $("#estado").addClass("bg-success");
                     $("#estado").html("Access granted<br>Acceso permitido");
-                    activate_relay("localhost",23,10);
+                    activate_relay(device_info["ip"],23,10);
                     /*$.when(privatev4APICall({module:"devi",action:"activate_relay",parameters:{"gpio":gpio,time:timer,"ip":device_info["ip"],no_persona:no_persona}})).done(function(p){
 
                     });*/
@@ -261,6 +261,7 @@ function scan_access_device(){
                     $("#codigo_escaner2").removeAttr("disabled");
                     document.getElementById("codigo_escaner").focus();
                 }
+                hideLoader();
             });
 
         }else{
