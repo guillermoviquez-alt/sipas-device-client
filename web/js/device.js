@@ -248,7 +248,7 @@ function scan_access_device(){
                             $("#estado").html("Access not granted<br>Acceso no permitido");
                             $("#estado").removeClass("bg-success");
                             $("#estado").addClass("bg-danger");
-                            document.getElementById("codigo_escaner").focus();
+                            document.getElementById("codigo_escaner2").focus();
                             open=false;
                             aux_timer=timer;
                             clearInterval(intervals["scan_timer"]);
@@ -259,7 +259,7 @@ function scan_access_device(){
                     },1000);
                 }else{
                     $("#codigo_escaner2").removeAttr("disabled");
-                    document.getElementById("codigo_escaner").focus();
+                    document.getElementById("codigo_escaner2").focus();
                 }
                 hideLoader();
             });

@@ -225,11 +225,12 @@
                         $("#ubicacion").html(space_info["aula"].replace("/","<br>"));
                     });
                     $("#device_footer").append("<div style='padding-left:20px;'>Timeout: <span id='timeout'>5</span></div>");
+
+                    hideLoader();
+                    $("#codigo_escaner2").focus();
                     $("#codigo_escaner2").on( "focusout", function() {
                         $("#codigo_escaner2").focus();
                     });
-                    hideLoader();
-                    $("#codigo_escaner2").focus();
                     $("#switch").remove();
                 }else{
                     $("#access_control").remove();
