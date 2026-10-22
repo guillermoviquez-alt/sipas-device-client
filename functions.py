@@ -3,6 +3,11 @@ import webbrowser
 
 import requests
 import config
+try:
+    import RPi.GPIO as GPIO
+    ES_RASPBERRY = True
+except ImportError:
+    ES_RASPBERRY = False
 
 def send_api_message(parameters):
     r=requests.post(url=config.SIPAS_BACKEND_URL+"/v4/api_private/", json=parameters,headers={})
