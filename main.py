@@ -6,15 +6,7 @@ import socket
 import logging
 import time
 import vlc
-try:
-    import RPi.GPIO as GPIO
-    ES_RASPBERRY = True
-except ImportError:
-    ES_RASPBERRY = False
-
-if ES_RASPBERRY:
-    # Aquí haces el import específico o usas código de la Raspberry
-    import os
+import RPi.GPIO as GPIO
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
