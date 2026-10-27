@@ -7,6 +7,7 @@ import logging
 import time
 import vlc
 import RPi.GPIO as GPIO
+import WebSocket
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
@@ -76,6 +77,9 @@ if __name__ == '__main__':
     logger.warning("Server Starts - %s:%s" % (config.HOSTNAME, config.HOST_PORT))
     logger.warning(functions.send_api_message({"module":"devi","action":"device_conection_notify","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME}))
     #functions.open_page()
+    if config.HOSTNAME == config.SOCKET_SERVER_IP:
+        WebSocket.iniciar_servidor()
+
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:
