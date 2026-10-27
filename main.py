@@ -1,3 +1,4 @@
+import asyncio
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 import config
@@ -78,8 +79,9 @@ if __name__ == '__main__':
     logger.warning(functions.send_api_message({"module":"devi","action":"device_conection_notify","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME}))
     #functions.open_page()
     if config.HOSTNAME == config.SOCKET_SERVER_IP:
-        WebSocket.iniciar_servidor()
+        asyncio.run(WebSocket.iniciar_servidor())
 
+    WebSocket.conectar()
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:
