@@ -19,11 +19,11 @@ async def manejador(websocket):
 async def iniciar_servidor():
     # Inicia el servidor WebSocket en localhost en el puerto 8765
     async with websockets.serve(manejador, config.HOSTNAME, config.SOCKET_PORT):
-        print("Servidor WebSocket corriendo en ws://"+config.SOCKET_SERVER_IP+":"+config.SOCKET_PORT)
+        print("Servidor WebSocket corriendo en ws://"+config.SOCKET_SERVER_IP+":"+str(config.SOCKET_PORT))
         await asyncio.Future()  # Mantiene el servidor en ejecución de forma indefinida
 
 async def conectar():
-    uri = "ws://"+config.SOCKET_SERVER_IP+":"+parseString(config.SOCKET_PORT)
+    uri = "ws://"+config.SOCKET_SERVER_IP+":"+str(config.SOCKET_PORT)
     async with websockets.connect(uri) as websocket:
         # Enviar un mensaje al servidor
         mensaje = "Hola, servidor!"
