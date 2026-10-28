@@ -21,6 +21,12 @@ async def manejador(websocket):
                     response_json["message"] = "add"
                     response_json["values"] = config.SERVER_CAR_QUEUE_STUDENT_LIST
                     await websocket.send(json.dumps(response_json))
+                if(mensaje_json["message"] == "remove"):
+                    for reg in mensaje_json["values"]:
+                        items = [item for item in config.SERVER_CAR_QUEUE_STUDENT_LIST if item["no_registro"] == reg]
+                        updated_json = config.SERVER_CAR_QUEUE_STUDENT_LIST.dumps(items)
+
+
             #await websocket.send(f"Eco: {mensaje}")
     except websockets.exceptions.ConnectionClosed:
         config.LOGGER.warning("Cliente desconectado")

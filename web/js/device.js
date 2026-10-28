@@ -358,6 +358,6 @@ function startCarQueue(){
         });
     });
     $("#listaSalidasCarroPendientes").html(contenido);*/
-    socket.send(JSON.stringify({ type: "car-queue", message: "start", data:[] }));
+    socket.send(JSON.stringify({ type: "car-queue", message: "start", values:[] }));
 
 }
