@@ -5,6 +5,7 @@ import websockets
 import config
 import functions
 import json
+import ssl
 
 
 async def manejador(websocket):
@@ -26,13 +27,14 @@ async def manejador(websocket):
 
 
 async def iniciar_servidor():
-    async with websockets.serve(manejador, config.HOSTNAME, config.SOCKET_PORT):
-        config.LOGGER.warning("Servidor WebSocket corriendo en ws://"+config.SOCKET_SERVER_IP+":"+str(config.SOCKET_PORT))
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    async with websockets.serve(manejador, config.HOSTNAME, config.SOCKET_PORT,ssl=ssl_context):
+        config.LOGGER.warning("Servidor WebSocket corriendo en wss://"+config.SOCKET_SERVER_IP+":"+str(config.SOCKET_PORT))
         config.SERVER_CAR_QUEUE_STUDENT_LIST=functions.send_api_message({"module":"devi","action":"car_queue_list","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME})
         await asyncio.Future()  # Mantiene el servidor en ejecución de forma indefinida
 
 async def conectar():
-    uri = "ws://"+config.SOCKET_SERVER_IP+":"+str(config.SOCKET_PORT)
+    uri = "wss://"+config.SOCKET_SERVER_IP+":"+str(config.SOCKET_PORT)
     async with websockets.connect(uri) as websocket:
         # Enviar un mensaje al servidor
         mensaje = "Hola, servidor!"
