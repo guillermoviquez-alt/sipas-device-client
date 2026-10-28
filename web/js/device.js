@@ -365,9 +365,31 @@ function startCarQueue(){
         });
 
         socket.addEventListener("message", (event) => {
-            console.log("Mensaje recibido:", event.data);
-            switch (event.data.type){
+            let mensaje_json=JSON.parse(event.data);
+            console.log(mensaje_json);
+            switch (mensaje_json["type"]){
                 case "car-queue":
+                    switch (mensaje_json["message"]){
+                        case "add":
+                            let contenido="";
+                            $(mensaje_json["values"]).each(function(i,person){
+                                contenido+="<div class='row' style='margin-bottom: 10px; border-bottom: 1px solid var(--PAS-yellow); padding-bottom: 10px;' id='salida_pendiente_"+person["no_persona"]+"'>"+
+
+                                    "<div class='col-8'>"+
+                                        "<p style='font-size: 28px; font-weight: bold; text-align: left;'>"+person["nombre"]+" "+person["apellido1"]+" "+person["apellido2"]+"</p>"+
+                                    "</div>"+
+                                    "<div class='col-4'>"+
+                                        "<p style='font-size: 28px; font-weight: bold; text-align: right;'>"+person["nivel_seccion"]+"</p>"+
+                                    "</div>"+
+                                "</div>";
+                            });
+                            $("#listaSalidasCarroPendientes").html(contenido);
+                            break;
+                        case "remove":
+                            break;
+                        default:
+                            break;
+                    }
                     break;
                 default:
                     break;
