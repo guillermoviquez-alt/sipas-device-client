@@ -3,6 +3,7 @@ from xml.sax import parseString
 
 import websockets
 import config
+import functions
 
 
 async def manejador(websocket):
@@ -20,6 +21,7 @@ async def iniciar_servidor():
     # Inicia el servidor WebSocket en localhost en el puerto 8765
     async with websockets.serve(manejador, config.HOSTNAME, config.SOCKET_PORT):
         print("Servidor WebSocket corriendo en ws://"+config.SOCKET_SERVER_IP+":"+str(config.SOCKET_PORT))
+        config.SERVER_CAR_QUEUE_STUDENT_LIST=functions.send_api_message()
         await asyncio.Future()  # Mantiene el servidor en ejecución de forma indefinida
 
 async def conectar():
