@@ -41,7 +41,7 @@ let cantidad_hijos=0;
 let cantidad_hijos_presionados=0;
 let socket_server_ip="10.0.3.119"
 let socket_server_port="8765"
-const socket = new WebSocket("wss://"+socket_server_ip+":"+socket_server_port);
+const socket = new WebSocket("wss://"+socket_server_ip+":"+socket_server_port,{ rejectUnauthorized: false });
 socket.addEventListener("open", (event) => {
     console.log("Conectado al servidor WebSocket.");
 
