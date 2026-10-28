@@ -4,6 +4,7 @@ from xml.sax import parseString
 import websockets
 import config
 import functions
+import json
 
 
 async def manejador(websocket):
@@ -11,17 +12,23 @@ async def manejador(websocket):
     try:
         async for mensaje in websocket:
             config.LOGGER.warning(f"Mensaje recibido: {mensaje}")
-            # Enviar una respuesta de vuelta
-            await websocket.send(f"Eco: {mensaje}")
+            mensaje_json=json.loads(mensaje)
+            response_json={}
+            if mensaje_json["type"] == "car-queue":
+                response_json["type"] = "car-queue"
+                if mensaje_json["message"] == "start":
+                    response_json["message"] = "add"
+                    response_json["values"] = config.SERVER_CAR_QUEUE_STUDENT_LIST
+                    await websocket.send(json.dumps(response_json))
+            #await websocket.send(f"Eco: {mensaje}")
     except websockets.exceptions.ConnectionClosed:
         config.LOGGER.warning("Cliente desconectado")
 
 
 async def iniciar_servidor():
-    # Inicia el servidor WebSocket en localhost en el puerto 8765
     async with websockets.serve(manejador, config.HOSTNAME, config.SOCKET_PORT):
         config.LOGGER.warning("Servidor WebSocket corriendo en ws://"+config.SOCKET_SERVER_IP+":"+str(config.SOCKET_PORT))
-        config.SERVER_CAR_QUEUE_STUDENT_LIST=functions.send_api_message({"module":"devi","action":"device_conection_notify","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME})
+        config.SERVER_CAR_QUEUE_STUDENT_LIST=functions.send_api_message({"module":"devi","action":"car_queue_list","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME})
         await asyncio.Future()  # Mantiene el servidor en ejecución de forma indefinida
 
 async def conectar():

@@ -1,4 +1,3 @@
-
 import logging
 SIPAS_BACKEND_URL="https://sipas-backend.panam.ed.cr"
 SIPAS_FRONTEND_URL="https://sipas.panam.ed.cr"
