@@ -1,3 +1,5 @@
+from asyncio.windows_events import NULL
+import logging
 SIPAS_BACKEND_URL="https://sipas-backend.panam.ed.cr"
 SIPAS_FRONTEND_URL="https://sipas.panam.ed.cr"
 HOST_PORT=8000
@@ -9,3 +11,4 @@ ES_RASPBERRY=False
 SOCKET_SERVER_IP="10.0.3.119"
 SOCKET_PORT=8765
 SERVER_CAR_QUEUE_STUDENT_LIST=[]
+LOGGER=logging.getLogger(APP_NAME)

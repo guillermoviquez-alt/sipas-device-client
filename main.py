@@ -4,7 +4,7 @@ import json
 import config
 import functions
 import socket
-import logging
+
 import time
 import vlc
 import RPi.GPIO as GPIO
@@ -14,8 +14,6 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
 config.HOSTNAME=s.getsockname()[0]
 s.close()
-
-logger = logging.getLogger(config.APP_NAME)
 
 class WebServer(BaseHTTPRequestHandler):
     def do_HEAD(self):
@@ -61,8 +59,8 @@ class WebServer(BaseHTTPRequestHandler):
             result = {"response": "activated"}
             print("" + parameters["gpio"] + " Activated")
         if parameters["action"] == "play_audio":
-            logger.warning("Playing audio")
-            logger.warning(config.SIPAS_BACKEND_URL+"/v4/file/view/"+config.SIPAS_SESSION+"/"+ parameters["no_archivo"])
+            config.LOGGER.warning("Playing audio")
+            config.LOGGER.warning(config.SIPAS_BACKEND_URL+"/v4/file/view/"+config.SIPAS_SESSION+"/"+ parameters["no_archivo"])
             vlc.MediaPlayer(config.SIPAS_BACKEND_URL+"/v4/file/view/"+config.SIPAS_SESSION+"/"+ parameters["no_archivo"]).play()
             result = {"response": "played"}
         self.send_response(200)
@@ -73,10 +71,10 @@ class WebServer(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     http_server = HTTPServer((config.HOSTNAME, config.HOST_PORT), WebServer)
-    logger.warning("SIPAS Pan-American School")
-    logger.warning("Client version : %s" % config.CLIENT_VERSION)
-    logger.warning("Server Starts - %s:%s" % (config.HOSTNAME, config.HOST_PORT))
-    logger.warning(functions.send_api_message({"module":"devi","action":"device_conection_notify","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME}))
+    config.LOGGER.warning("SIPAS Pan-American School")
+    config.LOGGER.warning("Client version : %s" % config.CLIENT_VERSION)
+    config.LOGGER.warning("Server Starts - %s:%s" % (config.HOSTNAME, config.HOST_PORT))
+    config.LOGGER.warning(functions.send_api_message({"module":"devi","action":"device_conection_notify","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME}))
     #functions.open_page()
     if config.HOSTNAME == config.SOCKET_SERVER_IP:
         asyncio.run(WebSocket.iniciar_servidor())
