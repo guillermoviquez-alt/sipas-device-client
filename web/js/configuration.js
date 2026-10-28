@@ -68,6 +68,9 @@ socket.addEventListener("message", (event) => {
                     $("#listaSalidasCarroPendientes").html(contenido);
                     break;
                 case "remove":
+                    $(mensaje_json["values"]).each(function(i,person){
+                        $("salida_pendiente_"+person["no_persona"]).remove();
+                    });
                     break;
                 default:
                     break;
