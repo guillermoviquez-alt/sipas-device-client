@@ -343,13 +343,11 @@ function startCorousel(){
 }
 
 function startCarQueue(){
-    $.when(privatev4APICall({module:"devi",action: "car_queue_list",parameters:{no_dispositivo:no_dispositivo}})).done(function (result) {
+   /* $.when(privatev4APICall({module:"devi",action: "car_queue_list",parameters:{no_dispositivo:no_dispositivo}})).done(function (result) {
         contenido="";
         $(result["data"]).each(function(i,person){
             contenido+="<div class='row' style='margin-bottom: 10px; border-bottom: 1px solid var(--PAS-yellow); padding-bottom: 10px;' id='salida_pendiente_"+person["no_persona"]+"'>"+
-                /*"<div class='col-2'>"+
-                    "<img style='width:80px; border-radius: 5px; box-shadow: 0 0 5px 0 rgba(0, 0, 0, 1);' src='/v4/file/view/"+session_info["data"]["uid"]+"/"+person["foto"]+"'>"+
-                "</div>"+*/
+
                 "<div class='col-8'>"+
                     "<p style='font-size: 28px; font-weight: bold; text-align: left;'>"+person["nombre"]+" "+person["apellido1"]+" "+person["apellido2"]+"</p>"+
                 "</div>"+
@@ -358,31 +356,30 @@ function startCarQueue(){
                 "</div>"+
             "</div>";
         });
-        $("#listaSalidasCarroPendientes").html(contenido);
-        const socket = new WebSocket("ws://localhost:8765");
-
-        // 2. Evento cuando se abre la conexión
-        socket.addEventListener("open", (event) => {
-          console.log("Conectado al servidor WebSocket.");
-
-          // Enviar un mensaje al servidor
-          socket.send(JSON.stringify({ type: "saludo", message: "¡Hola servidor!" }));
-        });
-
-        // 3. Evento para recibir mensajes del servidor
-        socket.addEventListener("message", (event) => {
-          console.log("Mensaje recibido:", event.data);
-        });
-
-        // 4. Evento si ocurre un error
-        socket.addEventListener("error", (error) => {
-          console.error("Error en WebSocket:", error);
-        });
-
-        // 5. Evento cuando se cierra la conexión
-        socket.addEventListener("close", (event) => {
-          console.log("Conexión cerrada:", event.code, event.reason);
-        });
     });
+    $("#listaSalidasCarroPendientes").html(contenido);*/
+        const socket = new WebSocket("ws://"+socket_server_ip+":"+socket_server_port);
+        socket.addEventListener("open", (event) => {
+            console.log("Conectado al servidor WebSocket.");
+            socket.send(JSON.stringify({ type: "car-queue", message: "start", data:[] }));
+        });
+
+        socket.addEventListener("message", (event) => {
+            console.log("Mensaje recibido:", event.data);
+            switch (event.data.type){
+                case "car-queue":
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        socket.addEventListener("error", (error) => {
+            console.error("Error en WebSocket:", error);
+        });
+
+        socket.addEventListener("close", (event) => {
+            console.log("Conexión cerrada:", event.code, event.reason);
+        });
 
 }

@@ -39,3 +39,5 @@ let no_persona=null;
 let persona=null;
 let cantidad_hijos=0;
 let cantidad_hijos_presionados=0;
+let socket_server_ip="10.0.3.119"
+let socket_server_port="8765"
