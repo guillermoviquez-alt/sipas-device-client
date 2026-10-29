@@ -1,5 +1,4 @@
 import asyncio
-#from websockets.asyncio.server import serve, broadcast
 import websockets
 import config
 import functions
@@ -22,15 +21,15 @@ async def manejador(websocket):
                     response_json["message"] = "add"
                     response_json["values"] = config.SERVER_CAR_QUEUE_STUDENT_LIST
                     await websocket.send(json.dumps(response_json))
-                if(mensaje_json["message"] == "remove"):
+                if mensaje_json["message"] == "remove":
                     response_json["message"] = "remove"
                     response_json["values"] = mensaje_json["values"]
                     for reg in mensaje_json["values"]:
                         items = [item for item in config.SERVER_CAR_QUEUE_STUDENT_LIST if int(item["no_registro"]) != reg["no_registro"]]
                         config.SERVER_CAR_QUEUE_STUDENT_LIST=items
                     recipients = CONNECTED_CLIENTS - {websocket}
-                    if recipients:
-                        broadcast(recipients, json.dumps(response_json))
+                    for  recipient in recipients:
+                        await recipient.send(json.dumps(response_json))
 
 
             #await websocket.send(f"Eco: {mensaje}")
