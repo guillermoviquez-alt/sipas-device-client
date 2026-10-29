@@ -23,7 +23,7 @@ async def manejador(websocket):
                     await websocket.send(json.dumps(response_json))
                 if(mensaje_json["message"] == "remove"):
                     for reg in mensaje_json["values"]:
-                        items = [item for item in config.SERVER_CAR_QUEUE_STUDENT_LIST if item["no_registro"] != reg]
+                        items = [item for item in config.SERVER_CAR_QUEUE_STUDENT_LIST if item["no_registro"] != reg["no_registro"]]
                         config.SERVER_CAR_QUEUE_STUDENT_LIST=items
 
 
