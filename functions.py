@@ -18,3 +18,7 @@ def open_page():
     file_name = 'web/index.html'
     absolute_path = os.path.abspath(file_name)
     webbrowser.open(f'file://{absolute_path}', new=2)
+
+def reiniciar_cola_carros():
+    config.LOGGER.warning("Re-check car queue")
+    config.LOGGER.warning(send_api_message({"module": "devi", "action": "device_conection_notify", "session_uid": config.SIPAS_SESSION,"device_ip": config.HOSTNAME}))

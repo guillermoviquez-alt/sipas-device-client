@@ -9,6 +9,9 @@ import time
 import vlc
 import RPi.GPIO as GPIO
 import WebSocket
+from apscheduler.schedulers.background import BackgroundScheduler
+import time
+import datetime
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
@@ -80,6 +83,14 @@ if __name__ == '__main__':
         asyncio.run(WebSocket.iniciar_servidor())
 
     WebSocket.conectar()
+
+    scheduler = BackgroundScheduler()
+    # Se ejecuta exactamente a las 00:00:00 de cada día
+    scheduler.add_job(functions.reiniciar_cola_carros, 'cron', hour=0, minute=0, second=0)
+    # Se ejecuta exactamente a las 00:00:00 de cada día
+    scheduler.add_job(functions.reiniciar_cola_carros, 'cron', minutes=1)
+    scheduler.start()
+
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:
