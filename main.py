@@ -86,11 +86,11 @@ if __name__ == '__main__':
 
     scheduler = BackgroundScheduler()
     # Se ejecuta exactamente a las 00:00:00 de cada día
-    scheduler.add_job(functions.reiniciar_cola_carros, 'cron', hour=0, minute=0, second=0)
+    #scheduler.add_job(functions.reiniciar_cola_carros, 'cron', hour=0, minute=0, second=0)
     # Se ejecuta exactamente a las 00:00:00 de cada día
     scheduler.add_job(functions.reiniciar_cola_carros, 'cron', minutes=1)
     scheduler.start()
-
+    config.LOGGER.warning("Scheduler completo")
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:

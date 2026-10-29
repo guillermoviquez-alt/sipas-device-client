@@ -16,6 +16,7 @@ if( session_uid !== null){
                 session_info=result;
                 showLog("log","Language setup: "+session_info["data"]["language"]);
                 setLocalVariable("language",session_info["data"]["language"]);
+
                 if(ubicacion_actual==="/v"+client_version+"/login" || ubicacion_actual==="/" || ubicacion_actual==="/v"+client_version+"/" || ubicacion_actual==="/login"){
                     window.location="/v"+client_version+"/"+result["data"]["user_device"];
                 }

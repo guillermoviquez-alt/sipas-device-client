@@ -41,4 +41,4 @@ let cantidad_hijos=0;
 let cantidad_hijos_presionados=0;
 let socket_server_ip="10.0.3.119";
 let socket_server_port="8765";
-const socket= socket_connect();
+let socket=null;

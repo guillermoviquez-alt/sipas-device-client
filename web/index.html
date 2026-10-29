@@ -158,8 +158,8 @@
         </div>
     </body>
     <script src="js/global.js?v=4.1.0"></script>
-    <script src="js/device.js?v=4.1.0"></script>
     <script src="js/configuration.js?v=4.1.0"></script>
+    <script src="js/device.js?v=4.1.0"></script>
     <script src="js/boot.js?v=4.1.0"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="js/moment.min.js" type="text/javascript"></script>
@@ -167,6 +167,7 @@
     <script>
         update_clock();
         intervals["date"]=setInterval(update_clock,10000);
+        socket_connect();
         $.when(privatev4APICall({module:"devi",action:"device_info_by_device_uid",parameters:{"device_uid":device_uid}}),privatev4APICall({module:"devi",action:"relay_device_list",parameters:{}})).done(function(result1,result2){
             if(result1[0]["data"]!==null){
                 device_info=result1[0]["data"];
