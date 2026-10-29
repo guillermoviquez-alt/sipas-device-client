@@ -1,15 +1,16 @@
 import asyncio
-from xml.sax import parseString
-
+from websockets.asyncio.server import serve, broadcast
 import websockets
 import config
 import functions
 import json
 import ssl
 
+CONNECTED_CLIENTS = set()
 
 async def manejador(websocket):
     config.LOGGER.warning("Cliente conectado")
+    CONNECTED_CLIENTS.add(websocket)
     try:
         async for mensaje in websocket:
             config.LOGGER.warning(f"Mensaje recibido: {mensaje}")
@@ -22,14 +23,21 @@ async def manejador(websocket):
                     response_json["values"] = config.SERVER_CAR_QUEUE_STUDENT_LIST
                     await websocket.send(json.dumps(response_json))
                 if(mensaje_json["message"] == "remove"):
+                    response_json["message"] = "remove"
+                    response_json["values"] = mensaje_json["values"]
                     for reg in mensaje_json["values"]:
                         items = [item for item in config.SERVER_CAR_QUEUE_STUDENT_LIST if int(item["no_registro"]) != reg["no_registro"]]
                         config.SERVER_CAR_QUEUE_STUDENT_LIST=items
+                    recipients = CONNECTED_CLIENTS - {websocket}
+                    if recipients:
+                        broadcast(recipients, json.dumps(response_json))
 
 
             #await websocket.send(f"Eco: {mensaje}")
     except websockets.exceptions.ConnectionClosed:
         config.LOGGER.warning("Cliente desconectado")
+    finally:
+        CONNECTED_CLIENTS.discard(websocket)
 
 
 async def iniciar_servidor():
