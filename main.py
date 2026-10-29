@@ -79,19 +79,22 @@ if __name__ == '__main__':
     config.LOGGER.warning("Server Starts - %s:%s" % (config.HOSTNAME, config.HOST_PORT))
     config.LOGGER.warning(functions.send_api_message({"module":"devi","action":"device_conection_notify","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME}))
     #functions.open_page()
-    if config.HOSTNAME == config.SOCKET_SERVER_IP:
-        asyncio.run(WebSocket.iniciar_servidor())
-
-    WebSocket.conectar()
-
     scheduler = BackgroundScheduler()
     # Se ejecuta exactamente a las 00:00:00 de cada día
-    #scheduler.add_job(functions.reiniciar_cola_carros, 'cron', hour=0, minute=0, second=0)
+    # scheduler.add_job(functions.reiniciar_cola_carros, 'cron', hour=0, minute=0, second=0)
     # Se ejecuta exactamente a las 00:00:00 de cada día
     scheduler.add_job(functions.reiniciar_cola_carros, 'cron', minutes=1)
     scheduler.start()
     config.LOGGER.warning("Scheduler completo")
+    if config.HOSTNAME == config.SOCKET_SERVER_IP:
+        config.LOGGER.warning("Iniciando socket server")
+        asyncio.run(WebSocket.iniciar_servidor())
+
+    #WebSocket.conectar()
+
+
     try:
+        config.LOGGER.warning("Iniciando web server")
         http_server.serve_forever()
     except KeyboardInterrupt:
         http_server.server_close()
