@@ -4,6 +4,7 @@ import config
 import functions
 import json
 import ssl
+from datetime import date
 
 CONNECTED_CLIENTS = set()
 
@@ -44,7 +45,7 @@ async def iniciar_servidor():
     ssl_context.load_cert_chain(certfile="../cert.pem", keyfile="../key.pem")
     async with websockets.serve(manejador, config.HOSTNAME, config.SOCKET_PORT,ssl=ssl_context):
         config.LOGGER.warning("Servidor WebSocket corriendo en wss://"+config.SOCKET_SERVER_IP+":"+str(config.SOCKET_PORT))
-        config.SERVER_CAR_QUEUE_STUDENT_LIST=functions.send_api_message({"module":"devi","action":"car_queue_list","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME})
+        config.SERVER_CAR_QUEUE_STUDENT_LIST=functions.send_api_message({"module":"devi","action":"car_queue_list","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME,"fecha":str(date.today())})
         await asyncio.Future()  # Mantiene el servidor en ejecución de forma indefinida
 
 async def conectar():
