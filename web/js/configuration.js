@@ -39,52 +39,6 @@ let no_persona=null;
 let persona=null;
 let cantidad_hijos=0;
 let cantidad_hijos_presionados=0;
-let socket_server_ip="10.0.3.119"
-let socket_server_port="8765"
-const socket = new WebSocket("wss://"+socket_server_ip+":"+socket_server_port);
-socket.addEventListener("open", (event) => {
-    console.log("Conectado al servidor WebSocket.");
-
-});
-
-socket.addEventListener("message", (event) => {
-    let mensaje_json=JSON.parse(event.data);
-    console.log(mensaje_json);
-    switch (mensaje_json["type"]){
-        case "car-queue":
-            switch (mensaje_json["message"]){
-                case "add":
-                    let contenido="";
-                    $(mensaje_json["values"]).each(function(i,person){
-                        contenido+="<div class='row' style='margin-bottom: 10px; border-bottom: 1px solid var(--PAS-yellow); padding-bottom: 10px;' id='salida_pendiente_"+person["no_registro"]+"'>"+
-                            "<div class='col-8'>"+
-                                "<p style='font-size: 28px; font-weight: bold; text-align: left;'>"+person["nombre"]+" "+person["apellido1"]+" "+person["apellido2"]+"</p>"+
-                            "</div>"+
-                            "<div class='col-4'>"+
-                                "<p style='font-size: 28px; font-weight: bold; text-align: right;'>"+person["nivel_seccion"]+"</p>"+
-                            "</div>"+
-                        "</div>";
-                    });
-                    $("#listaSalidasCarroPendientes").html(contenido);
-                    break;
-                case "remove":
-                    $(mensaje_json["values"]).each(function(i,person){
-                        $("#salida_pendiente_"+person["no_registro"]).remove();
-                    });
-                    break;
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-});
-
-socket.addEventListener("error", (error) => {
-    console.error("Error en WebSocket:", error);
-});
-
-socket.addEventListener("close", (event) => {
-    console.log("Conexión cerrada:", event.code, event.reason);
-});
+let socket_server_ip="10.0.3.119";
+let socket_server_port="8765";
+const socket= socket_connect();
