@@ -83,7 +83,7 @@ if __name__ == '__main__':
     # Se ejecuta exactamente a las 00:00:00 de cada día
     # scheduler.add_job(functions.reiniciar_cola_carros, 'cron', hour=0, minute=0, second=0)
     # Se ejecuta exactamente a las 00:00:00 de cada día
-    scheduler.add_job(functions.reiniciar_cola_carros, 'cron', minutes=1)
+    scheduler.add_job(functions.reiniciar_cola_carros, 'interval', seconds=60)
     scheduler.start()
     config.LOGGER.warning("Scheduler completo")
     if config.HOSTNAME == config.SOCKET_SERVER_IP:
