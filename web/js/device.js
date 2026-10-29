@@ -363,7 +363,7 @@ function startCarQueue(){
 }
 
 function socket_connect(){
-    socket=new WebSocket("wss://"+socket_server_ip+":"+socket_server_port);
+    socket=new WebSocket("wss://"+socket_server_ip);
     socket.addEventListener("open", (event) => {
         console.log("Conectado al servidor WebSocket.");
 

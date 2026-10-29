@@ -39,6 +39,6 @@ let no_persona=null;
 let persona=null;
 let cantidad_hijos=0;
 let cantidad_hijos_presionados=0;
-let socket_server_ip="web-socket-205912084718.us-central1.run.app";
+let socket_server_ip="sipas-socket.panam.ed.cr";
 let socket_server_port="8080";
 let socket=null;
