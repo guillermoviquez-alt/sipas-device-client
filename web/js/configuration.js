@@ -56,7 +56,7 @@ socket.addEventListener("message", (event) => {
                 case "add":
                     let contenido="";
                     $(mensaje_json["values"]).each(function(i,person){
-                        contenido+="<div class='row' style='margin-bottom: 10px; border-bottom: 1px solid var(--PAS-yellow); padding-bottom: 10px;' id='salida_pendiente_"+person["no_persona"]+"'>"+
+                        contenido+="<div class='row' style='margin-bottom: 10px; border-bottom: 1px solid var(--PAS-yellow); padding-bottom: 10px;' id='salida_pendiente_"+person["no_registro"]+"'>"+
                             "<div class='col-8'>"+
                                 "<p style='font-size: 28px; font-weight: bold; text-align: left;'>"+person["nombre"]+" "+person["apellido1"]+" "+person["apellido2"]+"</p>"+
                             "</div>"+
@@ -69,7 +69,7 @@ socket.addEventListener("message", (event) => {
                     break;
                 case "remove":
                     $(mensaje_json["values"]).each(function(i,person){
-                        $("#salida_pendiente_"+person["no_persona"]).remove();
+                        $("#salida_pendiente_"+person["no_registro"]).remove();
                     });
                     break;
                 default:
