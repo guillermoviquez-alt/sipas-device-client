@@ -380,7 +380,7 @@ function socket_connect(){
                         $(mensaje_json["values"]).each(function(i,person){
                             contenido+="<div class='row' style='margin-bottom: 10px; border-bottom: 1px solid var(--PAS-yellow); padding-bottom: 10px;' id='salida_pendiente_"+person["no_registro"]+"'>"+
                                 "<div class='col-8'>"+
-                                    "<p style='font-size: 28px; font-weight: bold; text-align: left;'>"+person["nombre"]+" "+person["apellido1"]+" "+person["apellido2"]+"</p>"+
+                                    "<p style='font-size: 28px; font-weight: bold; text-align: left;'>"+person["nombre_completo"]+"</p>"+
                                 "</div>"+
                                 "<div class='col-4'>"+
                                     "<p style='font-size: 28px; font-weight: bold; text-align: right;'>"+person["nivel_seccion"]+"</p>"+
