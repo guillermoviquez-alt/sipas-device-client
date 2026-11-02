@@ -9,7 +9,7 @@ import time
 import vlc
 import RPi.GPIO as GPIO
 import WebSocket
-from apscheduler.schedulers.background import BackgroundScheduler
+#from apscheduler.schedulers.background import BackgroundScheduler
 import time
 import datetime
 
@@ -79,16 +79,16 @@ if __name__ == '__main__':
     config.LOGGER.warning("Server Starts - %s:%s" % (config.HOSTNAME, config.HOST_PORT))
     config.LOGGER.warning(functions.send_api_message({"module":"devi","action":"device_conection_notify","session_uid":config.SIPAS_SESSION,"device_ip":config.HOSTNAME}))
     #functions.open_page()
-    scheduler = BackgroundScheduler()
+#    scheduler = BackgroundScheduler()
     # Se ejecuta exactamente a las 00:00:00 de cada día
     # scheduler.add_job(functions.reiniciar_cola_carros, 'cron', hour=0, minute=0, second=0)
     # Se ejecuta exactamente a las 00:00:00 de cada día
-    scheduler.add_job(functions.reiniciar_cola_carros, 'interval', seconds=60)
-    scheduler.start()
-    config.LOGGER.warning("Scheduler completo")
-    if config.HOSTNAME == config.SOCKET_SERVER_IP:
-        config.LOGGER.warning("Iniciando socket server")
-        asyncio.run(WebSocket.iniciar_servidor())
+#    scheduler.add_job(functions.reiniciar_cola_carros, 'interval', seconds=60)
+#    scheduler.start()
+#    config.LOGGER.warning("Scheduler completo")
+#    if config.HOSTNAME == config.SOCKET_SERVER_IP:
+#        config.LOGGER.warning("Iniciando socket server")
+#        asyncio.run(WebSocket.iniciar_servidor())
 
     #WebSocket.conectar()
 
